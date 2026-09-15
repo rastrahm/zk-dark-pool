@@ -1,8 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–7** ⏳ pendientes.  
+**Estado:** Fase **0** ✅ · Fases **1–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Docs sync:** 2026-09-15 — diseño pre-código alineado a `.cursorrules` del módulo y de la suite.
+**Suite:** `forge test` → **3 PASS** (smoke Fase 0).  
+**Docs sync:** 2026-09-15 — Fase 0 cerrada; diseño v1 alineado a `.cursorrules`.
 
 ---
 
@@ -180,7 +181,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 | Fase | Nombre | Estado | Autorización |
 |------|--------|--------|--------------|
-| 0 | Setup Foundry + Node/Circom + estructura | ⏳ Pendiente | ❌ No autorizada |
+| 0 | Setup Foundry + Node/Circom + estructura | ✅ Completada | ✅ Autorizada |
 | 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ⏳ Pendiente | ❌ No autorizada |
 | 2 | ShieldedVault (depósito + roots) | ⏳ Pendiente | ❌ No autorizada |
 | 3 | Circuito Circom `MatchOrders` + scripts | ⏳ Pendiente | ❌ No autorizada |
@@ -193,7 +194,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ## 7. Detalle por fase
 
-### Fase 0 — Setup Foundry + toolchain ZK
+### Fase 0 — Setup Foundry + toolchain ZK ✅
 
 **Objetivo:** repo compilable + toolchain Circom/SnarkJS documentada.
 
@@ -203,6 +204,17 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 4. `package.json` con `snarkjs` / utilidades; `.env.example`; stub + smoke test; `README.md`.
 
 **Criterio de salida:** `forge build` y `forge test` en verde; README con prereqs Circom.
+
+**Hecho (2026-09-15):**
+- `foundry.toml` (solc `0.8.24`, Cancun, optimizer `10_000`, `via_ir = false`, fuzz `runs = 1000`, RPC `mainnet` / `sepolia`, `fs_permissions` a fixtures).
+- `remappings.txt`: `forge-std/`, `@openzeppelin/contracts/`.
+- Dependencias en `lib/` (gitignored): `forge-std` + OpenZeppelin **v5.2.0** (copiadas del módulo 17).
+- Carpetas `src/{verifiers,interfaces,libraries,errors,mocks}`, `test/{helpers,fuzz,gas,fixtures/match}`, `circuits/`, `scripts/`, `script/`, `zkeys/`.
+- Stub `src/Placeholder.sol` + `test/Placeholder.t.sol` (ping + remapping IERC20 + fuzz 1000).
+- Stub `script/Deploy.s.sol` (Fase 7), stubs Node `scripts/{compile-circuit,generate-proof,export-verifier}.mjs`.
+- `package.json` + `npm install` (`snarkjs`, `circomlib`, `circomlibjs`, `poseidon-solidity`); `.env.example`; `README.md` + `circuits/README.md`.
+- Circom **2.1.9** verificado en PATH.
+- `forge build` OK; `forge test` → **3 PASS** (fuzz 1000).
 
 ---
 
@@ -343,6 +355,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` ↔ fixtu
 
 ## 10. Próximo paso
 
-**Fase 0** está lista para autorización.
+**Fase 0** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 0**.
+Para continuar, responde: **autorizo Fase 1**.
