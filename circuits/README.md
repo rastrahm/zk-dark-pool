@@ -77,4 +77,4 @@ PTAU_POWER=14 npm run generate:proof   # default
 |------|-----|
 | `circuits/build/` | ignorado |
 | `test/fixtures/match/` | versionable (Foundry) |
-| `src/verifiers/Groth16Verifier.sol` | Fase 4 |
+| `src/verifiers/Groth16Verifier.sol` | versionable (export Fase 4) |

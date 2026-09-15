@@ -2,8 +2,8 @@
 
 Dark pool institucional con órdenes ciegas (Poseidon), match Groth16 y settlement atómico en vault apantallado. Solidity `0.8.24` + Foundry + Circom/SnarkJS.
 
-**Estado:** Fases **0–3** ✅ · Fases **4–7** ⏳  
-**Suite:** `forge test` → **38 PASS** · MatchOrders fixtures verify OK.
+**Estado:** Fases **0–4** ✅ · Fases **5–7** ⏳  
+**Suite:** `forge test` → **46 PASS**.
 
 ## Docs
 
@@ -51,9 +51,9 @@ forge install OpenZeppelin/openzeppelin-contracts@v5.2.0 --no-git --shallow
 
 ```bash
 export PATH="$HOME/.cargo/bin:$PATH"
-npm run compile:circuit   # stub hasta Fase 3
-npm run generate:proof    # stub hasta Fase 3
-npm run export:verifier   # stub hasta Fase 4
+npm run compile:circuit   # → circuits/build/
+npm run generate:proof    # ptau lab + fixtures
+npm run export:verifier   # → src/verifiers/Groth16Verifier.sol
 ```
 
 **No versionar:** `*.ptau`, `*.zkey`, `circuits/build/` (ver `.gitignore`).
