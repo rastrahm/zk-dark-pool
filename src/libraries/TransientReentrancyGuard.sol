@@ -13,16 +13,19 @@ abstract contract TransientReentrancyGuard {
     error ReentrancyGuardReentrantCall();
 
     modifier nonReentrant() {
+        // Slot unico por contrato: tstore es global a la tx; sin xor, DarkPool→Vault reentrarían.
         assembly {
-            if tload(_LOCK_SLOT) {
+            let slot := xor(_LOCK_SLOT, shl(96, address()))
+            if tload(slot) {
                 mstore(0x00, 0x3ee5aeb5) // ReentrancyGuardReentrantCall()
                 revert(0x1c, 0x04)
             }
-            tstore(_LOCK_SLOT, 1)
+            tstore(slot, 1)
         }
         _;
         assembly {
-            tstore(_LOCK_SLOT, 0)
+            let slot := xor(_LOCK_SLOT, shl(96, address()))
+            tstore(slot, 0)
         }
     }
 }
