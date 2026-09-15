@@ -2,8 +2,8 @@
 
 Dark pool institucional con órdenes ciegas (Poseidon), match Groth16 y settlement atómico en vault apantallado. Solidity `0.8.24` + Foundry + Circom/SnarkJS.
 
-**Estado:** Fase **0** ✅ · Fases **1–7** ⏳  
-**Suite:** `forge test` (smoke Fase 0).
+**Estado:** Fases **0–1** ✅ · Fases **2–7** ⏳  
+**Suite:** `forge test` → **19 PASS**.
 
 ## Docs
 

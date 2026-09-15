@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fase **0** ✅ · Fases **1–7** ⏳ pendientes.  
+**Estado:** Fases **0–1** ✅ · Fases **2–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **3 PASS** (smoke Fase 0).  
-**Docs sync:** 2026-09-15 — Fase 0 cerrada; diseño v1 alineado a `.cursorrules`.
+**Suite:** `forge test` → **19 PASS**.  
+**Docs sync:** 2026-09-15 — Fase 1 cerrada (Hasher + BlindOrderBook).
 
 ---
 
@@ -182,7 +182,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | Fase | Nombre | Estado | Autorización |
 |------|--------|--------|--------------|
 | 0 | Setup Foundry + Node/Circom + estructura | ✅ Completada | ✅ Autorizada |
-| 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ⏳ Pendiente | ❌ No autorizada |
+| 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ✅ Completada | ✅ Autorizada |
 | 2 | ShieldedVault (depósito + roots) | ⏳ Pendiente | ❌ No autorizada |
 | 3 | Circuito Circom `MatchOrders` + scripts | ⏳ Pendiente | ❌ No autorizada |
 | 4 | `Groth16Verifier` + fixtures | ⏳ Pendiente | ❌ No autorizada |
@@ -218,7 +218,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 1 — Errors + Hasher + OrderCommitment + BlindOrderBook
+### Fase 1 — Errors + Hasher + OrderCommitment + BlindOrderBook ✅
 
 **Objetivo:** commitments de orden y registro ciego on-chain.
 
@@ -228,6 +228,19 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 4. Estructura mínima de `BlindOrderBook` / mapping de commitments vivos.
 
 **Criterio de salida:** tests de commitment + book en verde.
+
+**Hecho (2026-09-15):**
+- `src/errors/DarkPoolErrors.sol` — 10 custom errors (incl. `OrderAlreadyFilled`).
+- `src/interfaces/IHasher.sol` — `hashLeftRight` + `hashOrder`.
+- `src/libraries/PoseidonT3.sol` — Poseidon 2-inputs (poseidon-solidity MIT, pragma `0.8.24`).
+- `src/libraries/OrderCommitment.sol` — `Poseidon(Poseidon(price,amount), Poseidon(side,salt))`; `SIDE_BUY=0` / `SIDE_SELL=1`.
+- `src/PoseidonHasher.sol` — wrapper IHasher alineado a Circom.
+- `src/mocks/MockHasher.sol` — keccak anidado para tests rapidos del book.
+- `src/BlindOrderBook.sol` — `submitOrder` / `isLive` / `liveOrders` / `orderNullifiers` + `_consumeOrder` internal.
+- `test/helpers/BlindOrderBookHarness.sol` — expone consume para tests.
+- Tests: `DarkPoolErrors.t.sol`, `OrderCommitment.t.sol`, `BlindOrderBook.t.sol` (fuzz 1000).
+- Stub `Placeholder` eliminado.
+- **`forge test` → 19 PASS**.
 
 ---
 
@@ -355,6 +368,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` ↔ fixtu
 
 ## 10. Próximo paso
 
-**Fase 0** ✅ cerrada.
+**Fase 1** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 1**.
+Para continuar, responde: **autorizo Fase 2**.
