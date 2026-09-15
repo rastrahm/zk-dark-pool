@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–3** ✅ · Fases **4–7** ⏳ pendientes.  
+**Estado:** Fases **0–4** ✅ · Fases **5–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **38 PASS** · circuito MatchOrders **4782** constraints · fixtures verify OK.  
-**Docs sync:** 2026-09-15 — Fase 3 cerrada (Circom MatchOrders).
+**Suite:** `forge test` → **46 PASS**.  
+**Docs sync:** 2026-09-15 — Fase 4 cerrada (Groth16Verifier on-chain).
 
 ---
 
@@ -188,7 +188,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ✅ Completada | ✅ Autorizada |
 | 2 | ShieldedVault (depósito + roots) | ✅ Completada | ✅ Autorizada |
 | 3 | Circuito Circom `MatchOrders` + scripts | ✅ Completada | ✅ Autorizada |
-| 4 | `Groth16Verifier` + fixtures | ⏳ Pendiente | ❌ No autorizada |
+| 4 | `Groth16Verifier` + fixtures | ✅ Completada | ✅ Autorizada |
 | 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ⏳ Pendiente | ❌ No autorizada |
 | 6 | Suite seguridad: replay / mismatch / tampered | ⏳ Pendiente | ❌ No autorizada |
 | 7 | Gas + Deploy + NatSpec / cierre v1 | ⏳ Pendiente | ❌ No autorizada |
@@ -290,7 +290,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 4 — Verifier on-chain + fixtures
+### Fase 4 — Verifier on-chain + fixtures ✅
 
 **Objetivo:** `Groth16Verifier` integrable desde Foundry.
 
@@ -299,6 +299,14 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 3. Fixtures en `test/fixtures/match/` consumibles por tests Solidity.
 
 **Criterio de salida:** test de pairing válida + proof inválida → revert.
+
+**Hecho (2026-09-15):**
+- `scripts/export-verifier.mjs` — snarkjs export + patch pragma `0.8.24` + `is IVerifier` (7 públicos).
+- `src/verifiers/Groth16Verifier.sol` (GPL-3.0 snarkJS) + `VerifierGate` (`InvalidZKProof`).
+- `src/interfaces/IVerifier.sol` + `src/mocks/MockVerifier.sol`.
+- Fixture `test/fixtures/match/solidity_proof.json` (a/b/c/input hex, orden Ethereum).
+- Tests: `ProofVerification.t.sol` — valid, tampered proof/inputs → false / `InvalidZKProof`, mock gate.
+- **`forge test` → 46 PASS**.
 
 ---
 
@@ -392,6 +400,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` (Fase 5) 
 
 ## 10. Próximo paso
 
-**Fase 3** ✅ cerrada.
+**Fase 4** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 4**.
+Para continuar, responde: **autorizo Fase 5**.
