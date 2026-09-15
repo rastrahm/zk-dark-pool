@@ -27,7 +27,7 @@ contract BlindOrderBook {
      * @param commitment `hash(price, amount, side, salt)` off-chain.
      * @return same El commitment registrado.
      */
-    function submitOrder(bytes32 commitment) public returns (bytes32 same) {
+    function submitOrder(bytes32 commitment) public virtual returns (bytes32 same) {
         if (commitment == bytes32(0)) {
             revert DarkPoolErrors.InvalidOrderCommitment();
         }

@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–4** ✅ · Fases **5–7** ⏳ pendientes.  
+**Estado:** Fases **0–5** ✅ · Fases **6–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **46 PASS**.  
-**Docs sync:** 2026-09-15 — Fase 4 cerrada (Groth16Verifier on-chain).
+**Suite:** `forge test` → **53 PASS**.  
+**Docs sync:** 2026-09-15 — Fase 5 cerrada (DarkPool match + settlement).
 
 ---
 
@@ -189,7 +189,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | 2 | ShieldedVault (depósito + roots) | ✅ Completada | ✅ Autorizada |
 | 3 | Circuito Circom `MatchOrders` + scripts | ✅ Completada | ✅ Autorizada |
 | 4 | `Groth16Verifier` + fixtures | ✅ Completada | ✅ Autorizada |
-| 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ⏳ Pendiente | ❌ No autorizada |
+| 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ✅ Completada | ✅ Autorizada |
 | 6 | Suite seguridad: replay / mismatch / tampered | ⏳ Pendiente | ❌ No autorizada |
 | 7 | Gas + Deploy + NatSpec / cierre v1 | ⏳ Pendiente | ❌ No autorizada |
 
@@ -310,7 +310,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 5 — DarkPool match + settlement
+### Fase 5 — DarkPool match + settlement ✅
 
 **Objetivo:** match ZK atómico con anti-double-fill.
 
@@ -319,6 +319,14 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 3. Binding: señales públicas deben coincidir con args de `executeMatch`.
 
 **Criterio de salida:** e2e con fixture real o mock verifier + settlement correcto.
+
+**Hecho (2026-09-15):**
+- `IDarkPool` + `DarkPool` (hereda `BlindOrderBook` + transient reentrancy).
+- `executeMatch`: live orders → nullifiers → `isKnownBalanceRoot` → `verifyProof` → `_consumeOrder` ×2 → `vault.applySettlement`.
+- Transient lock **por contrato** (`xor` con `address()`), permite DarkPool → Vault en la misma tx.
+- Tests mock: success, replay nullifier, unknown root, not live, invalid proof.
+- E2E: Poseidon vault + `Groth16Verifier` + fixture MatchOrders — `balanceRoot` on-chain == circuito.
+- **`forge test` → 53 PASS**.
 
 ---
 
@@ -400,6 +408,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` (Fase 5) 
 
 ## 10. Próximo paso
 
-**Fase 4** ✅ cerrada.
+**Fase 5** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 5**.
+Para continuar, responde: **autorizo Fase 6**.
