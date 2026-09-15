@@ -2,8 +2,8 @@
 
 Dark pool institucional con órdenes ciegas (Poseidon), match Groth16 y settlement atómico en vault apantallado. Solidity `0.8.24` + Foundry + Circom/SnarkJS.
 
-**Estado:** Fases **0–2** ✅ · Fases **3–7** ⏳  
-**Suite:** `forge test` → **38 PASS**.
+**Estado:** Fases **0–3** ✅ · Fases **4–7** ⏳  
+**Suite:** `forge test` → **38 PASS** · MatchOrders fixtures verify OK.
 
 ## Docs
 
@@ -14,7 +14,7 @@ Dark pool institucional con órdenes ciegas (Poseidon), match Groth16 y settleme
 | [`doc/diagrama-de-clases.md`](./doc/diagrama-de-clases.md) | UML |
 | [`doc/diagrama-de-flujo.md`](./doc/diagrama-de-flujo.md) | Commit / match / settle |
 | [`doc/flujograma.md`](./doc/flujograma.md) | Ciclo e2e |
-| [`circuits/README.md`](./circuits/README.md) | Circuito `MatchOrders` (Fase 3+) |
+| [`circuits/README.md`](./circuits/README.md) | Circuito `MatchOrders(4)` + señales |
 
 ## Stack
 

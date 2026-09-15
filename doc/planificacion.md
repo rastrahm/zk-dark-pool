@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–2** ✅ · Fases **3–7** ⏳ pendientes.  
+**Estado:** Fases **0–3** ✅ · Fases **4–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **38 PASS**.  
-**Docs sync:** 2026-09-15 — Fase 2 cerrada (ShieldedVault).
+**Suite:** `forge test` → **38 PASS** · circuito MatchOrders **4782** constraints · fixtures verify OK.  
+**Docs sync:** 2026-09-15 — Fase 3 cerrada (Circom MatchOrders).
 
 ---
 
@@ -187,7 +187,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | 0 | Setup Foundry + Node/Circom + estructura | ✅ Completada | ✅ Autorizada |
 | 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ✅ Completada | ✅ Autorizada |
 | 2 | ShieldedVault (depósito + roots) | ✅ Completada | ✅ Autorizada |
-| 3 | Circuito Circom `MatchOrders` + scripts | ⏳ Pendiente | ❌ No autorizada |
+| 3 | Circuito Circom `MatchOrders` + scripts | ✅ Completada | ✅ Autorizada |
 | 4 | `Groth16Verifier` + fixtures | ⏳ Pendiente | ❌ No autorizada |
 | 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ⏳ Pendiente | ❌ No autorizada |
 | 6 | Suite seguridad: replay / mismatch / tampered | ⏳ Pendiente | ❌ No autorizada |
@@ -269,7 +269,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 3 — Circuito Circom + scripts de proof
+### Fase 3 — Circuito Circom + scripts de proof ✅
 
 **Objetivo:** circuito de match reproducible.
 
@@ -278,6 +278,15 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 3. Documentar ptau de lab y orden de señales públicas; artefactos en `circuits/build/` ignorados.
 
 **Criterio de salida:** proof de lab generada; señales públicas documentadas.
+
+**Hecho (2026-09-15):**
+- Circom **2.1.9**: `circuits/matchOrders.circom` + `merkleTree.circom`.
+- Compilacion: **4782** constraints, **7** public inputs, **26** private.
+- Relaciones: OrderCommit anidado (= Solidity), nullifier `Poseidon(salt, side)`, notas Merkle bajo `balanceRoot`, rangos precio/monto (`GreaterEqThan(64)`).
+- Scripts: `compile-circuit.mjs`, `generate-proof.mjs` (ptau lab **power-14**).
+- Fixtures: `test/fixtures/match/{input,proof,public,verification_key}.json` — `snarkjs.verify = true`.
+- Docs: `circuits/README.md` (orden de señales publicas).
+- **`forge test` → 38 PASS** (sin regresion).
 
 ---
 
@@ -336,18 +345,20 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 ### Order commitment y nullifier
 
 ```text
-orderCommitment = Poseidon(price, amount, side, salt)
-orderNullifier  = Poseidon(commitment, fillNonce)   // o Poseidon(salt, side) — fijar en Fase 3
+orderCommitment = Poseidon(Poseidon(price, amount), Poseidon(side, salt))
+orderNullifier  = Poseidon(salt, side)              // SIDE_BUY=0, SIDE_SELL=1
+noteCommitment  = Poseidon(noteAmount, noteSecret)
 ```
 
 El proof demuestra:
 
 1. Conocimiento de params que abren `buyCommitment` y `sellCommitment`.
-2. `buyPrice >= sellPrice` y `execPrice` en el rango comprometido.
-3. Nonces / saldos apantallados suficientes bajo `balanceRoot`.
-4. Binding a nullifiers públicos (anti-replay).
+2. `buyPrice >= sellPrice` y `sellPrice <= execPrice <= buyPrice`.
+3. `execAmount` acotado por amounts de orden y de notas apantalladas.
+4. Membership de ambas notas bajo `balanceRoot`.
+5. Binding a nullifiers públicos (anti-replay).
 
-### Señales públicas (borrador — fijar en Fase 3)
+### Señales públicas (v1 — orden fijo)
 
 ```text
 publicInputs = [
@@ -361,7 +372,7 @@ publicInputs = [
 ]
 ```
 
-Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` ↔ fixtures.
+Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` (Fase 5) ↔ fixtures.
 
 ---
 
@@ -381,6 +392,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` ↔ fixtu
 
 ## 10. Próximo paso
 
-**Fase 2** ✅ cerrada.
+**Fase 3** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 3**.
+Para continuar, responde: **autorizo Fase 4**.
