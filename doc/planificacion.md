@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–5** ✅ · Fases **6–7** ⏳ pendientes.  
+**Estado:** Fases **0–6** ✅ · Fase **7** ⏳ pendiente.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **53 PASS**.  
-**Docs sync:** 2026-09-15 — Fase 5 cerrada (DarkPool match + settlement).
+**Suite:** `forge test` → **68 PASS**.  
+**Docs sync:** 2026-09-15 — Fase 6 cerrada (matriz de seguridad).
 
 ---
 
@@ -190,7 +190,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | 3 | Circuito Circom `MatchOrders` + scripts | ✅ Completada | ✅ Autorizada |
 | 4 | `Groth16Verifier` + fixtures | ✅ Completada | ✅ Autorizada |
 | 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ✅ Completada | ✅ Autorizada |
-| 6 | Suite seguridad: replay / mismatch / tampered | ⏳ Pendiente | ❌ No autorizada |
+| 6 | Suite seguridad: replay / mismatch / tampered | ✅ Completada | ✅ Autorizada |
 | 7 | Gas + Deploy + NatSpec / cierre v1 | ⏳ Pendiente | ❌ No autorizada |
 
 ---
@@ -330,7 +330,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 6 — Matriz de seguridad (tests del módulo)
+### Fase 6 — Matriz de seguridad (tests del módulo) ✅
 
 | Tipo | Qué valida |
 |------|------------|
@@ -340,6 +340,14 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | Tampered Proof | Proof o commitments alterados → `InvalidZKProof` |
 
 **Criterio de salida:** `MatchExecution`, `OrderNullifierReplay`, `PriceMismatch`, `TamperedProof` en verde.
+
+**Hecho (2026-09-15):**
+- `test/helpers/DarkPoolSecurityBase.sol` — deploy ZK/mock + fixture notes.
+- `MatchExecution.t.sol` — settle atómico + change notes actualizan root.
+- `OrderNullifierReplay.t.sol` — same proof twice, cross-order reuse, fuzz nullifier.
+- `PriceMismatch.t.sol` — execPrice/execAmount tampered → `InvalidZKProof`; ordenes siguen vivas (CEI).
+- `TamperedProof.t.sol` — proof A, commitments, nullifier, root, mock false.
+- **`forge test` → 68 PASS**.
 
 ---
 
@@ -408,6 +416,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` (Fase 5) 
 
 ## 10. Próximo paso
 
-**Fase 5** ✅ cerrada.
+**Fase 6** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 6**.
+Para continuar, responde: **autorizo Fase 7**.
