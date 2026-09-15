@@ -2,11 +2,11 @@
 
 | Archivo | Contenido |
 |---------|-----------|
-| [planificacion.md](./planificacion.md) | Fases 0–1 ✅ · Fases 2–7 pendientes |
+| [planificacion.md](./planificacion.md) | Fases 0–2 ✅ · Fases 3–7 pendientes |
 | [diagrama-de-clases.md](./diagrama-de-clases.md) | UML Mermaid (diseño objetivo v1) |
 | [diagrama-de-flujo.md](./diagrama-de-flujo.md) | Decisiones por función |
 | [flujograma.md](./flujograma.md) | Ciclo e2e commit → match → settle |
 
-**Sync docs:** 2026-09-15 · Fase 1 cerrada · `forge test` → **19 PASS**.
+**Sync docs:** 2026-09-15 · Fase 2 cerrada · `forge test` → **38 PASS**.
 
 README del módulo: [`../README.md`](../README.md).

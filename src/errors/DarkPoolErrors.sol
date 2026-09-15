@@ -15,6 +15,12 @@ library DarkPoolErrors {
     /// @notice Commitment de orden cero, duplicado o no registrado.
     error InvalidOrderCommitment();
 
+    /// @notice Commitment de nota cero, duplicado o invalido.
+    error InvalidNoteCommitment();
+
+    /// @notice El Merkle tree de saldos alcanzo 2^levels hojas.
+    error TreeFull();
+
     /// @notice La raiz de saldos apantallados no esta en el historial conocido.
     error UnknownBalanceRoot();
 
@@ -27,7 +33,7 @@ library DarkPoolErrors {
     /// @notice Se recibio address(0) donde no esta permitido.
     error ZeroAddress();
 
-    /// @notice Caller no autorizado (admin / roles).
+    /// @notice Caller no autorizado (admin / roles / darkPool).
     error Unauthorized();
 
     /// @notice Fallo la transferencia ETH via `.call`.
@@ -35,4 +41,7 @@ library DarkPoolErrors {
 
     /// @notice Fallo la transferencia ERC-20.
     error TokenTransferFailed();
+
+    /// @notice `msg.value` o amount de deposito inconsistente.
+    error InvalidDepositAmount();
 }

@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–1** ✅ · Fases **2–7** ⏳ pendientes.  
+**Estado:** Fases **0–2** ✅ · Fases **3–7** ⏳ pendientes.  
 **Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **19 PASS**.  
-**Docs sync:** 2026-09-15 — Fase 1 cerrada (Hasher + BlindOrderBook).
+**Suite:** `forge test` → **38 PASS**.  
+**Docs sync:** 2026-09-15 — Fase 2 cerrada (ShieldedVault).
 
 ---
 
@@ -155,13 +155,16 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 error OrderAlreadyFilled();          // obligatorio (.cursorrules)
 error InvalidZKProof();              // proof fallida / tampered / mismatch
 error InvalidOrderCommitment();      // zero / duplicado / no registrado
+error InvalidNoteCommitment();       // nota cero / duplicada (Fase 2)
+error TreeFull();                    // Merkle de saldos lleno (Fase 2)
 error UnknownBalanceRoot();          // raíz de saldo no histórica
 error InsufficientShieldedBalance(); // saldo apantallado insuficiente (si se chequea on-chain)
 error InvalidSettlement();           // montos / notas inconsistentes
 error ZeroAddress();
-error Unauthorized();                // admin futuro
+error Unauthorized();                // admin / darkPool
 error EthTransferFailed();
 error TokenTransferFailed();
+error InvalidDepositAmount();        // msg.value / amount inconsistente (Fase 2)
 ```
 
 Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, settlement atómico, commitments ciegos.
@@ -183,7 +186,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 |------|--------|--------|--------------|
 | 0 | Setup Foundry + Node/Circom + estructura | ✅ Completada | ✅ Autorizada |
 | 1 | Errors + Hasher + OrderCommitment + BlindOrderBook | ✅ Completada | ✅ Autorizada |
-| 2 | ShieldedVault (depósito + roots) | ⏳ Pendiente | ❌ No autorizada |
+| 2 | ShieldedVault (depósito + roots) | ✅ Completada | ✅ Autorizada |
 | 3 | Circuito Circom `MatchOrders` + scripts | ⏳ Pendiente | ❌ No autorizada |
 | 4 | `Groth16Verifier` + fixtures | ⏳ Pendiente | ❌ No autorizada |
 | 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ⏳ Pendiente | ❌ No autorizada |
@@ -244,7 +247,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 2 — ShieldedVault
+### Fase 2 — ShieldedVault ✅
 
 **Objetivo:** depósitos apantallados y raíz de saldos.
 
@@ -253,6 +256,16 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 3. CEI + transient reentrancy; custom errors de transfer.
 
 **Criterio de salida:** unit + fuzz de depósitos en verde.
+
+**Hecho (2026-09-15):**
+- `DarkPoolErrors`: +`InvalidNoteCommitment`, `TreeFull`, `InvalidDepositAmount` (13 errores).
+- `TransientReentrancyGuard` (EIP-1153 Cancun).
+- `MerkleTreeWithHistory` — insert, ring 30 roots, `isKnownRoot` (adaptado a DarkPoolErrors).
+- `IShieldedVault` + `ShieldedVault`: deposit ETH (`token=0`) / ERC-20; `balanceRoot`; `noteNullifiers`; `applySettlement` (solo `darkPool`).
+- `setDarkPool` one-shot; CEI: notes+insert antes de `safeTransferFrom`.
+- `MockERC20` para tests.
+- Tests: `ShieldedVault.t.sol` — ETH/ERC-20, TreeFull, roots historicas, settlement nullifiers, fuzz 1000.
+- **`forge test` → 38 PASS**.
 
 ---
 
@@ -368,6 +381,6 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` ↔ fixtu
 
 ## 10. Próximo paso
 
-**Fase 1** ✅ cerrada.
+**Fase 2** ✅ cerrada.
 
-Para continuar, responde: **autorizo Fase 2**.
+Para continuar, responde: **autorizo Fase 3**.
