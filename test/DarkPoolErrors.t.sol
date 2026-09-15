@@ -7,21 +7,24 @@ import {DarkPoolErrors} from "../src/errors/DarkPoolErrors.sol";
 
 /**
  * @title DarkPoolErrorsTest
- * @notice Smoke de selectores de errores custom (Fase 1).
+ * @notice Smoke de selectores de errores custom.
  */
 contract DarkPoolErrorsTest is Test {
     function test_errorSelectors_distinct() public pure {
-        bytes4[10] memory selectors = [
+        bytes4[13] memory selectors = [
             DarkPoolErrors.OrderAlreadyFilled.selector,
             DarkPoolErrors.InvalidZKProof.selector,
             DarkPoolErrors.InvalidOrderCommitment.selector,
+            DarkPoolErrors.InvalidNoteCommitment.selector,
+            DarkPoolErrors.TreeFull.selector,
             DarkPoolErrors.UnknownBalanceRoot.selector,
             DarkPoolErrors.InsufficientShieldedBalance.selector,
             DarkPoolErrors.InvalidSettlement.selector,
             DarkPoolErrors.ZeroAddress.selector,
             DarkPoolErrors.Unauthorized.selector,
             DarkPoolErrors.EthTransferFailed.selector,
-            DarkPoolErrors.TokenTransferFailed.selector
+            DarkPoolErrors.TokenTransferFailed.selector,
+            DarkPoolErrors.InvalidDepositAmount.selector
         ];
 
         for (uint256 i = 0; i < selectors.length; ++i) {
@@ -33,7 +36,6 @@ contract DarkPoolErrorsTest is Test {
     }
 
     function test_OrderAlreadyFilledSelectorMatchesCursorrules() public pure {
-        // Obligatorio del modulo: anti double-fill.
         assertEq(
             DarkPoolErrors.OrderAlreadyFilled.selector,
             bytes4(keccak256("OrderAlreadyFilled()"))
