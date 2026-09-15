@@ -1,0 +1,6 @@
+DarkPoolGasTest:testGas_deposit_mockHasher() (gas: 99531)
+DarkPoolGasTest:testGas_e2e_groth16_executeMatch() (gas: 2424075)
+DarkPoolGasTest:testGas_executeMatch_mock() (gas: 134548)
+DarkPoolGasTest:testGas_poseidonHashOrder() (gas: 64711)
+DarkPoolGasTest:testGas_submitOrder() (gas: 29447)
+DarkPoolGasTest:testGas_verifyProof_groth16() (gas: 340223)

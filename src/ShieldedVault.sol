@@ -138,10 +138,9 @@ contract ShieldedVault is IShieldedVault, MerkleTreeWithHistory, TransientReentr
         bytes32 newSellNote
     ) external nonReentrant {
         if (msg.sender != darkPool) revert DarkPoolErrors.Unauthorized();
-        if (buyNullifier == bytes32(0) || sellNullifier == bytes32(0)) {
+        if (buyNullifier == bytes32(0) || sellNullifier == bytes32(0) || buyNullifier == sellNullifier) {
             revert DarkPoolErrors.InvalidSettlement();
         }
-        if (buyNullifier == sellNullifier) revert DarkPoolErrors.InvalidSettlement();
         if (noteNullifiers[buyNullifier] || noteNullifiers[sellNullifier]) {
             revert DarkPoolErrors.InvalidSettlement();
         }
@@ -160,18 +159,10 @@ contract ShieldedVault is IShieldedVault, MerkleTreeWithHistory, TransientReentr
     }
 
     /**
-     * @dev Inserta change note tras checks de unicidad y capacidad.
+     * @dev Inserta change note; TreeFull / zero leaf los valida `_insert`.
      */
     function _insertChangeNote(bytes32 noteCommitment) private {
         if (notes[noteCommitment]) revert DarkPoolErrors.InvalidNoteCommitment();
-
-        uint32 _next = nextIndex();
-        uint32 capacity;
-        unchecked {
-            capacity = uint32(1) << levels;
-        }
-        if (_next >= capacity) revert DarkPoolErrors.TreeFull();
-
         notes[noteCommitment] = true;
         _insert(noteCommitment);
     }

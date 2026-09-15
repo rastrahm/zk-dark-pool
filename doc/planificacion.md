@@ -1,9 +1,9 @@
 # Planificación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
 
-**Estado:** Fases **0–6** ✅ · Fase **7** ⏳ pendiente.  
-**Regla de avance:** no se escribe código de una fase hasta autorización explícita (*“autorizo Fase N”*).  
-**Suite:** `forge test` → **68 PASS**.  
-**Docs sync:** 2026-09-15 — Fase 6 cerrada (matriz de seguridad).
+**Estado:** Fases **0–7** ✅ (módulo v1 cerrado).  
+**Regla de avance:** la regla de autorización por fase aplicó durante la construcción; v1 ya no tiene fases pendientes.  
+**Suite:** `forge test` → **74 PASS**.  
+**Docs sync:** 2026-09-15 — diagramas/API = código; SWC-AUDIT + GAS + Deploy; circuitos README v1.
 
 ---
 
@@ -17,7 +17,7 @@ Construir un **Dark Pool institucional con preservación de privacidad** que per
   2. Nonces válidos y saldos apantallados suficientes.
   3. Precio de ejecución dentro del rango comprometido, sin revelar límites.
 - Prevenir double-fill con `orderNullifiers` y `error OrderAlreadyFilled()`.
-- Ejecutar **settlement atómico** entre vaults de balances apantallados (EIP-712 o proof-based).
+- Ejecutar **settlement atómico** proof-based entre notas del `ShieldedVault` (`applySettlement`).
 
 Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js queda **fuera de alcance v1**.
 
@@ -82,6 +82,7 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 ├── .cursorrules
 ├── .gitignore
 ├── .env.example
+├── .gas-snapshot
 ├── foundry.toml
 ├── remappings.txt
 ├── package.json
@@ -90,10 +91,13 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 │   ├── planificacion.md
 │   ├── diagrama-de-clases.md
 │   ├── diagrama-de-flujo.md
-│   └── flujograma.md
+│   ├── flujograma.md
+│   ├── SWC-AUDIT.md
+│   └── GAS.md
 ├── circuits/
 │   ├── README.md
 │   ├── matchOrders.circom
+│   ├── merkleTree.circom
 │   └── build/                   # gitignored
 ├── scripts/
 │   ├── compile-circuit.mjs
@@ -115,19 +119,24 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 │   ├── libraries/
 │   │   ├── PoseidonT3.sol
 │   │   ├── OrderCommitment.sol
+│   │   ├── MerkleTreeWithHistory.sol
 │   │   └── TransientReentrancyGuard.sol
 │   ├── errors/
 │   │   └── DarkPoolErrors.sol
 │   └── mocks/
 │       ├── MockVerifier.sol
-│       └── MockHasher.sol
+│       ├── MockHasher.sol
+│       └── MockERC20.sol
 ├── test/
 │   ├── helpers/
 │   ├── MatchExecution.t.sol
 │   ├── OrderNullifierReplay.t.sol
 │   ├── PriceMismatch.t.sol
 │   ├── TamperedProof.t.sol
-│   ├── gas/
+│   ├── DarkPoolMatch.t.sol
+│   ├── ProofVerification.t.sol
+│   ├── ShieldedVault.t.sol
+│   ├── gas/DarkPool.gas.t.sol
 │   └── fixtures/match/
 └── script/
     └── Deploy.s.sol
@@ -137,15 +146,16 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 
 | Artefacto | Responsabilidad |
 |-----------|-----------------|
-| `DarkPool` | submitOrder / executeMatch; nullifiers; orquesta verify + settle |
-| `BlindOrderBook` | Registro de commitments vivos (puede vivir dentro de DarkPool) |
-| `ShieldedVault` | Depósitos apantallados; settlement atómico entre notas |
+| `DarkPool` | `submitOrder` / `executeMatch`; hereda book; orquesta verify + settle |
+| `BlindOrderBook` | `liveOrders` + `orderNullifiers` (base de DarkPool) |
+| `ShieldedVault` | Deposit + Merkle; `applySettlement` solo desde `darkPool` |
+| `MerkleTreeWithHistory` | Insert + ring de 30 roots |
 | `PoseidonHasher` / `PoseidonT3` / `OrderCommitment` | Hash alineado a circomlib |
-| `IVerifier` / `Groth16Verifier` | Pairing Groth16 del match |
+| `IVerifier` / `Groth16Verifier` | Pairing Groth16 (7 públicos) |
 | `VerifierGate` | `requireValidProof` → `InvalidZKProof` |
-| `TransientReentrancyGuard` | Lock EIP-1153 (Cancun) |
-| `MockVerifier` / `MockHasher` | Tests unitarios |
-| `DarkPoolErrors` | Custom errors del módulo |
+| `TransientReentrancyGuard` | Lock EIP-1153 por contrato (`xor address`) |
+| `MockVerifier` / `MockHasher` / `MockERC20` | Tests |
+| `DarkPoolErrors` | 13 custom errors del módulo |
 
 ---
 
@@ -191,7 +201,7 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 | 4 | `Groth16Verifier` + fixtures | ✅ Completada | ✅ Autorizada |
 | 5 | `DarkPool.submitOrder` + `executeMatch` + settlement | ✅ Completada | ✅ Autorizada |
 | 6 | Suite seguridad: replay / mismatch / tampered | ✅ Completada | ✅ Autorizada |
-| 7 | Gas + Deploy + NatSpec / cierre v1 | ⏳ Pendiente | ❌ No autorizada |
+| 7 | Gas + Deploy + NatSpec / cierre v1 | ✅ Completada | ✅ Autorizada |
 
 ---
 
@@ -322,11 +332,11 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 **Hecho (2026-09-15):**
 - `IDarkPool` + `DarkPool` (hereda `BlindOrderBook` + transient reentrancy).
-- `executeMatch`: live orders → nullifiers → `isKnownBalanceRoot` → `verifyProof` → `_consumeOrder` ×2 → `vault.applySettlement`.
+- `executeMatch`: live → nullifiers → `isKnownBalanceRoot` → `verifyProof` → mark → `vault.applySettlement(newBuyNote, newSellNote)`.
 - Transient lock **por contrato** (`xor` con `address()`), permite DarkPool → Vault en la misma tx.
 - Tests mock: success, replay nullifier, unknown root, not live, invalid proof.
 - E2E: Poseidon vault + `Groth16Verifier` + fixture MatchOrders — `balanceRoot` on-chain == circuito.
-- **`forge test` → 53 PASS**.
+- **`forge test` → 53 PASS** (opts de consume sin re-SLOAD en Fase 7).
 
 ---
 
@@ -351,16 +361,24 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 ---
 
-### Fase 7 — Gas + Deploy + hardening
+### Fase 7 — Gas + Deploy + hardening ✅
 
 **Objetivo:** profiling y cierre v1.
 
-1. Gas: Poseidon commitment updates vs Groth16 pairing; snapshot / `doc/GAS.md` (si se autoriza crear).
+1. Gas: Poseidon commitment updates vs Groth16 pairing; snapshot / `doc/GAS.md`.
 2. `Deploy.s.sol` + NatSpec completo.
 3. Actualizar diagramas / planificación a “implementado”.
-4. Opcional: `doc/SWC-AUDIT.md` estilo módulos previos.
+4. `doc/SWC-AUDIT.md` estilo módulo 20.
 
 **Criterio de salida:** suite completa en verde; módulo v1 listo para cierre.
+
+**Hecho (2026-09-15):**
+- Gas opts: consume sin re-SLOAD; cache immutables; checks antes de pairing; `_insertChangeNote` lean; transient lock per-address.
+- `test/gas/DarkPool.gas.t.sol` + `.gas-snapshot` + `doc/GAS.md` (Poseidon ~18k vs Groth16 ~229k).
+- `script/Deploy.s.sol` — hasher + verifier + vault + pool + `setDarkPool`.
+- `doc/SWC-AUDIT.md` — matriz SWC-100–136 (0 vulnerables, 5 informativos).
+- Docs sync: UML/flujos/circuitos alineados a API real (`executeMatch` + change notes; sin EIP-712 v1).
+- **`forge test` → 74 PASS**.
 
 ---
 
@@ -402,20 +420,22 @@ Alineado exactamente: `matchOrders.circom` ↔ `DarkPool.executeMatch` (Fase 5) 
 
 ## 9. Criterios de aceptación globales (v1)
 
-- [ ] Pragma fijo `0.8.24` en todos los contratos.
-- [ ] Órdenes solo como commitments Poseidon (params ocultos hasta match).
-- [ ] `orderNullifiers` + `OrderAlreadyFilled`.
-- [ ] Verificación Groth16 on-chain del match (precio, saldos, rango).
-- [ ] Settlement atómico en `ShieldedVault`.
-- [ ] Tests: match OK, nullifier replay, price mismatch, tampered proof.
-- [ ] NatSpec + custom errors + CEI / reentrancy.
-- [ ] Circom/SnarkJS documentados; secretos/ptau/zkey no versionados.
-- [ ] Documentación (`doc/`) alineada al código final + GAS (+ SWC opcional).
+- [x] Pragma fijo `0.8.24` en todos los contratos.
+- [x] Órdenes solo como commitments Poseidon (params ocultos hasta match).
+- [x] `orderNullifiers` + `OrderAlreadyFilled`.
+- [x] Verificación Groth16 on-chain del match (precio, saldos, rango).
+- [x] Settlement atómico en `ShieldedVault`.
+- [x] Tests: match OK, nullifier replay, price mismatch, tampered proof.
+- [x] NatSpec + custom errors + CEI / reentrancy.
+- [x] Circom/SnarkJS documentados; secretos/ptau/zkey no versionados.
+- [x] Documentación (`doc/`) alineada al código final + GAS + SWC.
 
 ---
 
-## 10. Próximo paso
+## 10. Estado post-v1
 
-**Fase 6** ✅ cerrada.
+El módulo **v1 está cerrado** (fases 0–7). Extensiones requieren nueva autorización de alcance.
 
-Para continuar, responde: **autorizo Fase 7**.
+Suite de referencia: `forge test` → **74 PASS**.
+
+Post-v1 opcional: frontend Next.js, partial fills multi-leg, depth 20, ceremony productiva.
