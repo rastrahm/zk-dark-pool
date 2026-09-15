@@ -1,0 +1,33 @@
+# .cursorrules — Module 21: Privacy-Preserving Dark Pools & ZK Order Books
+
+## MODULE OVERVIEW
+Focus on building an institutional privacy-preserving Dark Pool, zero-knowledge order commitment schemes, hidden balance/order matching validation (Groth16 verifiers over BN254/Alt_BN128), and atomic settlement mechanics using Foundry and Solidity 0.8.24.
+
+---
+
+## 1. TECHNICAL CONSTRAINTS & STACK
+
+- **Compiler Version:** Strictly `pragma solidity 0.8.24;` (no floating pragmas).
+- **Tooling:** Foundry (`forge` for circuit proof verification tests, order matching logic, and gas benchmarks).
+- **Crypto Primitives:** Poseidon hashes for blind commitment trees and SnarkJS/Groth16 verifiers for verifying order validity off-chain.
+
+---
+
+## 2. CODING & SECURITY RULES
+
+- **Blind Order Commitment Scheme:** Orders are submitted as Poseidon commitments (`hash(price, amount, side, salt)`). No trade parameters are exposed on-chain until the match is proved.
+- **Nullifier & Double-Fill Protection:** Enforce unique nullifiers for every partially or fully filled order commitment (`mapping(bytes32 => bool) public orderNullifiers`) to prevent double-matching (`error OrderAlreadyFilled()`).
+- **Zero-Knowledge Match Verification:** Direct verification of ZK proofs demonstrating that:
+  1. The BUY order price >= SELL order price.
+  2. Both traders hold valid nonces and sufficient shielded balances.
+  3. The execution price lies strictly within the committed range without revealing the underlying limits.
+- **Atomic Settlement & Asset Shielding:** Execute token transfers directly between shielded balance vaults using EIP-712 dynamic signatures or proof-based transfers.
+
+---
+
+## 3. TESTING REQUIREMENTS
+
+- **ZK Match Execution Tests:** Verify valid atomic order settlement when submitting matching BUY and SELL proofs.
+- **Order Nullifier Replay Tests:** Assert explicit revert when attempting to re-match or double-execute a previously filled order commitment.
+- **Price Mismatch & Tampered Proof Tests:** Assert failure when submitting invalid range proofs or altered commitment parameters.
+- **Gas Profiling & Yul Optimization:** Measure gas overhead of Poseidon commitment updates vs Groth16 pairing check verification.
