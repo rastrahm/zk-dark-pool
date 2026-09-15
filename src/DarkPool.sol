@@ -11,7 +11,8 @@ import {DarkPoolErrors} from "./errors/DarkPoolErrors.sol";
 /**
  * @title DarkPool
  * @notice Order book ciego + match Groth16 + settlement apantallado.
- * @dev CEI: checks → consume nullifiers → vault.applySettlement.
+ * @dev CEI: checks → marcar nullifiers → vault.applySettlement.
+ *      Gas: cache de immutables; consume sin re-SLOAD tras checks (Fase 7).
  */
 contract DarkPool is IDarkPool, BlindOrderBook, TransientReentrancyGuard {
     /// @notice Vault de notas apantalladas.
@@ -60,7 +61,7 @@ contract DarkPool is IDarkPool, BlindOrderBook, TransientReentrancyGuard {
 
     /**
      * @inheritdoc IDarkPool
-     * @dev Orden: live commitments → nullifiers libres → known root → verifyProof → consume → settle.
+     * @dev Orden: live → nullifiers libres → known root → verifyProof → effects → settle.
      */
     function executeMatch(
         uint256[2] calldata a,
@@ -70,13 +71,14 @@ contract DarkPool is IDarkPool, BlindOrderBook, TransientReentrancyGuard {
         bytes32 newBuyNote,
         bytes32 newSellNote
     ) external nonReentrant {
+        IShieldedVault vault_ = vault;
+        IVerifier verifier_ = verifier;
+
         bytes32 buyCommitment = bytes32(publicInputs[0]);
         bytes32 sellCommitment = bytes32(publicInputs[1]);
         bytes32 buyNullifier = bytes32(publicInputs[2]);
         bytes32 sellNullifier = bytes32(publicInputs[3]);
         bytes32 balanceRoot = bytes32(publicInputs[4]);
-        uint256 execAmount = publicInputs[5];
-        uint256 execPrice = publicInputs[6];
 
         if (buyCommitment == bytes32(0) || sellCommitment == bytes32(0) || buyCommitment == sellCommitment) {
             revert DarkPoolErrors.InvalidOrderCommitment();
@@ -90,19 +92,23 @@ contract DarkPool is IDarkPool, BlindOrderBook, TransientReentrancyGuard {
         ) {
             revert DarkPoolErrors.OrderAlreadyFilled();
         }
-        if (!vault.isKnownBalanceRoot(balanceRoot)) {
+        if (!vault_.isKnownBalanceRoot(balanceRoot)) {
             revert DarkPoolErrors.UnknownBalanceRoot();
         }
-        if (!verifier.verifyProof(a, b, c, publicInputs)) {
+        if (!verifier_.verifyProof(a, b, c, publicInputs)) {
             revert DarkPoolErrors.InvalidZKProof();
         }
 
-        // Effects: consumir ordenes (nullifiers) antes del settlement externo.
-        _consumeOrder(buyCommitment, buyNullifier);
-        _consumeOrder(sellCommitment, sellNullifier);
+        // Effects: sin re-check de _consumeOrder (ya validados arriba).
+        liveOrders[buyCommitment] = false;
+        liveOrders[sellCommitment] = false;
+        orderNullifiers[buyNullifier] = true;
+        orderNullifiers[sellNullifier] = true;
 
-        vault.applySettlement(buyNullifier, sellNullifier, newBuyNote, newSellNote);
+        vault_.applySettlement(buyNullifier, sellNullifier, newBuyNote, newSellNote);
 
-        emit MatchExecuted(buyCommitment, sellCommitment, buyNullifier, sellNullifier, execAmount, execPrice);
+        emit MatchExecuted(
+            buyCommitment, sellCommitment, buyNullifier, sellNullifier, publicInputs[5], publicInputs[6]
+        );
     }
 }

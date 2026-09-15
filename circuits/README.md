@@ -1,6 +1,7 @@
-# Circuitos Circom — ZK Dark Pool (modulo 21)
+# Circuitos Circom — ZK Dark Pool (módulo 21)
 
-**Estado Fase 3:** `MatchOrders(4)` compilado + fixtures Foundry. Docs: [`../doc/README.md`](../doc/README.md).
+**Estado:** v1 cerrado · `MatchOrders(4)` + fixtures Foundry + `Groth16Verifier` on-chain.  
+Docs: [`../doc/README.md`](../doc/README.md) · Sync: 2026-09-15.
 
 ## matchOrders.circom
 
@@ -12,7 +13,7 @@
 | Constraints | **4782** |
 | Public inputs | **7** |
 
-### Senales publicas (orden fijo)
+### Señales públicas (orden fijo)
 
 | # | Nombre | Uso on-chain |
 |---|--------|--------------|
@@ -22,11 +23,11 @@
 | 3 | `sellNullifier` | Anti double-fill SELL |
 | 4 | `balanceRoot` | Debe pasar `isKnownBalanceRoot` |
 | 5 | `execAmount` | Monto ejecutado |
-| 6 | `execPrice` | Precio de ejecucion |
+| 6 | `execPrice` | Precio de ejecución |
 
 ### Privadas
 
-Ordenes: `buyPrice`, `buyAmount`, `buySalt`, `sellPrice`, `sellAmount`, `sellSalt`  
+Órdenes: `buyPrice`, `buyAmount`, `buySalt`, `sellPrice`, `sellAmount`, `sellSalt`  
 Notas: `buyNoteAmount`, `buyNoteSecret`, `sellNoteAmount`, `sellNoteSecret`  
 Paths: `buyPathElements[4]`, `buyPathIndices[4]`, `sellPathElements[4]`, `sellPathIndices[4]`
 
@@ -50,8 +51,8 @@ MerklePoseidon(sellNote) == balanceRoot
 export PATH="$HOME/.cargo/bin:$PATH"
 
 npm run compile:circuit   # → circuits/build/
-npm run generate:proof    # ptau lab pot14 + fixtures test/fixtures/match/
-npm run export:verifier   # Fase 4 → src/verifiers/Groth16Verifier.sol
+npm run generate:proof    # ptau lab + fixtures test/fixtures/match/
+npm run export:verifier   # → src/verifiers/Groth16Verifier.sol
 ```
 
 ### Ptau (lab)
@@ -63,12 +64,12 @@ PTAU_PATH=/ruta/a/tu.ptau npm run generate:proof
 PTAU_POWER=14 npm run generate:proof   # default
 ```
 
-**Nunca** versionar `.ptau` ni `.zkey` de produccion.
+**Nunca** versionar `.ptau` ni `.zkey` de producción.
 
 ### Cambiar profundidad
 
 1. Editar `component main ... = MatchOrders(N);` en `matchOrders.circom`
-2. `LEVELS=N npm run generate:proof` y (Fase 4) `npm run export:verifier`
+2. `LEVELS=N npm run generate:proof` y `npm run export:verifier`
 3. Deploy vault/pool con `MERKLE_TREE_LEVELS=N`
 
 ## Artefactos
@@ -77,4 +78,4 @@ PTAU_POWER=14 npm run generate:proof   # default
 |------|-----|
 | `circuits/build/` | ignorado |
 | `test/fixtures/match/` | versionable (Foundry) |
-| `src/verifiers/Groth16Verifier.sol` | versionable (export Fase 4) |
+| `src/verifiers/Groth16Verifier.sol` | versionable (export SnarkJS) |
