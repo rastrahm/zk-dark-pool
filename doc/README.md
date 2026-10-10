@@ -1,14 +1,14 @@
-# Documentación — Módulo 21: Privacy-Preserving Dark Pools & ZK Order Books
+# Documentación / Documentation — Módulo 21 ZK Dark Pool
 
-| Archivo | Contenido |
-|---------|-----------|
-| [planificacion.md](./planificacion.md) | Fases 0–7 ✅ (módulo v1 cerrado) |
-| [diagrama-de-clases.md](./diagrama-de-clases.md) | UML Mermaid (API real) |
-| [diagrama-de-flujo.md](./diagrama-de-flujo.md) | Decisiones por función |
-| [flujograma.md](./flujograma.md) | Ciclo e2e commit → match → settle |
-| [SWC-AUDIT.md](./SWC-AUDIT.md) | Matriz SWC-100–136 (0 vulnerables) |
-| [GAS.md](./GAS.md) | Poseidon vs Groth16 + snapshot |
+| Documento / Document | Español | English |
+|----------------------|---------|---------|
+| Índice / Index | [README-ES.md](./README-ES.md) | [README-EN.md](./README-EN.md) |
+| Planificación / Planning | [planificacion-ES.md](./planificacion-ES.md) | [planificacion-EN.md](./planificacion-EN.md) |
+| Diagrama de clases / Class diagram | [diagrama-de-clases-ES.md](./diagrama-de-clases-ES.md) | [diagrama-de-clases-EN.md](./diagrama-de-clases-EN.md) |
+| Diagrama de flujo / Flow diagram | [diagrama-de-flujo-ES.md](./diagrama-de-flujo-ES.md) | [diagrama-de-flujo-EN.md](./diagrama-de-flujo-EN.md) |
+| Flujograma / End-to-end flowchart | [flujograma-ES.md](./flujograma-ES.md) | [flujograma-EN.md](./flujograma-EN.md) |
+| Auditoría SWC / SWC audit | [SWC-AUDIT-ES.md](./SWC-AUDIT-ES.md) | [SWC-AUDIT-EN.md](./SWC-AUDIT-EN.md) |
+| Gas | [GAS-ES.md](./GAS-ES.md) | [GAS-EN.md](./GAS-EN.md) |
+| Decisiones y lógica / Decisions & logic | [DECISIONES-Y-LOGICA-ES.md](./DECISIONES-Y-LOGICA-ES.md) | [DECISIONES-Y-LOGICA-EN.md](./DECISIONES-Y-LOGICA-EN.md) |
 
-**Sync docs:** 2026-09-15 · v1 cerrado · diagramas = código · `forge test` → **74 PASS**.
-
-README del módulo: [`../README.md`](../README.md) · Circuitos: [`../circuits/README.md`](../circuits/README.md).
+README del módulo / Module README: [`../README.md`](../README.md)

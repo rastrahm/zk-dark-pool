@@ -91,4 +91,4 @@ Env: `PRIVATE_KEY`, `MERKLE_TREE_LEVELS` (default 4), `POOL_TOKEN` (default `add
 - [`foundry.toml`](../foundry.toml)
 - [`test/gas/DarkPool.gas.t.sol`](../test/gas/DarkPool.gas.t.sol)
 - [`.gas-snapshot`](../.gas-snapshot)
-- [SWC-AUDIT.md](./SWC-AUDIT.md)
+- [SWC-AUDIT-ES.md](./SWC-AUDIT-ES.md)

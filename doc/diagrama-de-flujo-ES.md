@@ -140,7 +140,7 @@ flowchart TD
 
 ## Relación con otros docs
 
-- UML: [`diagrama-de-clases.md`](./diagrama-de-clases.md)
-- E2E: [`flujograma.md`](./flujograma.md)
-- Gas / SWC: [`GAS.md`](./GAS.md) · [`SWC-AUDIT.md`](./SWC-AUDIT.md)
-- Índice: [`README.md`](./README.md)
+- UML: [`diagrama-de-clases-ES.md`](./diagrama-de-clases-ES.md)
+- E2E: [`flujograma-ES.md`](./flujograma-ES.md)
+- Gas / SWC: [`GAS-ES.md`](./GAS-ES.md) · [`SWC-AUDIT-ES.md`](./SWC-AUDIT-ES.md)
+- Índice: [`README-ES.md`](./README-ES.md)
