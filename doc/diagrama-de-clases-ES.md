@@ -188,4 +188,4 @@ classDiagram
 - Settlement **proof-based** (sin EIP-712 en v1); solo `darkPool` llama `applySettlement`.
 - Transient reentrancy **por contrato** (`tstore` xor `address()`): DarkPool → Vault en la misma tx.
 - Stack: Solidity `0.8.24`, Foundry, Poseidon, Groth16/BN254. Frontend Next.js fuera de v1.
-- Decisiones / e2e: [`diagrama-de-flujo.md`](./diagrama-de-flujo.md) · [`flujograma.md`](./flujograma.md).
+- Decisiones / e2e: [`diagrama-de-flujo-ES.md`](./diagrama-de-flujo-ES.md) · [`flujograma-ES.md`](./flujograma-ES.md).

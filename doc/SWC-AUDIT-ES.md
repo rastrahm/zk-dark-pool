@@ -1,6 +1,6 @@
 # Auditoría SWC — Privacy-Preserving Dark Pools & ZK Order Books
 
-Verificación del dark pool ZK (módulo 21) contra el [SWC Registry](https://swcregistry.io/) (EIP-1470). Estilo alineado a [`20-institutional-custody-mpc/doc/SWC-AUDIT.md`](../../20-institutional-custody-mpc/doc/SWC-AUDIT.md).
+Verificación del dark pool ZK (módulo 21) contra el [SWC Registry](https://swcregistry.io/) (EIP-1470). Estilo alineado a [`20-institutional-custody-mpc/doc/SWC-AUDIT-ES.md`](../../20-institutional-custody-mpc/doc/SWC-AUDIT-ES.md).
 
 > **Nota:** El SWC Registry no se mantiene activamente desde ~2020. Complementar con [SCSVS](https://github.com/ComposableSecurity/SCSVS) y [EEA EthTrust](https://entethalliance.org/specs/ethtrust/).
 
@@ -26,7 +26,7 @@ Verificación del dark pool ZK (módulo 21) contra el [SWC Registry](https://swc
 **Mocks (fuera de prod):** `MockHasher`, `MockVerifier`, `MockERC20`  
 **Fecha:** 2026-09-15 (Fase 7 / cierre v1)  
 **Referencia tests:** `MatchExecution`, `OrderNullifierReplay`, `PriceMismatch`, `TamperedProof`, `DarkPoolMatch`, `ProofVerification`, `ShieldedVault`, `gas/DarkPool.gas` (74 PASS)  
-**Índice:** [`README.md`](./README.md) · README módulo: [`../README.md`](../README.md) · [`GAS.md`](./GAS.md)
+**Índice:** [`README-ES.md`](./README-ES.md) · README módulo: [`../README-ES.md`](../README-ES.md) · [`GAS-ES.md`](./GAS-ES.md)
 
 ---
 
@@ -160,6 +160,6 @@ Verificación del dark pool ZK (módulo 21) contra el [SWC Registry](https://swc
 
 - [SWC Registry](https://swcregistry.io/)
 - [EIP-1470](https://eips.ethereum.org/EIPS/eip-1470)
-- [`20-institutional-custody-mpc/doc/SWC-AUDIT.md`](../../20-institutional-custody-mpc/doc/SWC-AUDIT.md)
-- [`17-zk-snarks-privacy/doc/SWC-AUDIT.md`](../../17-zk-snarks-privacy/doc/SWC-AUDIT.md)
-- [GAS.md](./GAS.md)
+- [`20-institutional-custody-mpc/doc/SWC-AUDIT-ES.md`](../../20-institutional-custody-mpc/doc/SWC-AUDIT-ES.md)
+- [`17-zk-snarks-privacy/doc/SWC-AUDIT-ES.md`](../../17-zk-snarks-privacy/doc/SWC-AUDIT-ES.md)
+- [GAS-ES.md](./GAS-ES.md)

@@ -78,7 +78,8 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 
 ```
 21-zk-dark-pool/
-├── README.md
+├── README.md                    # índice de idiomas
+├── README-ES.md / README-EN.md
 ├── .cursorrules
 ├── .gitignore
 ├── .env.example
@@ -86,14 +87,17 @@ Stack: **Foundry + Solidity `0.8.24`** + **Circom + SnarkJS**. Frontend Next.js 
 ├── foundry.toml
 ├── remappings.txt
 ├── package.json
-├── doc/
-│   ├── README.md
-│   ├── planificacion.md
-│   ├── diagrama-de-clases.md
-│   ├── diagrama-de-flujo.md
-│   ├── flujograma.md
-│   ├── SWC-AUDIT.md
-│   └── GAS.md
+├── portfolio/                   # landing ES/EN
+├── doc/                         # cada doc en -ES.md y -EN.md
+│   ├── README.md                # índice de idiomas
+│   ├── README-{ES,EN}.md
+│   ├── planificacion-{ES,EN}.md
+│   ├── diagrama-de-clases-{ES,EN}.md
+│   ├── diagrama-de-flujo-{ES,EN}.md
+│   ├── flujograma-{ES,EN}.md
+│   ├── SWC-AUDIT-{ES,EN}.md
+│   ├── GAS-{ES,EN}.md
+│   └── DECISIONES-Y-LOGICA-{ES,EN}.md
 ├── circuits/
 │   ├── README.md
 │   ├── matchOrders.circom
@@ -365,18 +369,18 @@ Obligatorios del módulo: `OrderAlreadyFilled()`, verificación ZK de match, set
 
 **Objetivo:** profiling y cierre v1.
 
-1. Gas: Poseidon commitment updates vs Groth16 pairing; snapshot / `doc/GAS.md`.
+1. Gas: Poseidon commitment updates vs Groth16 pairing; snapshot / `doc/GAS-ES.md`.
 2. `Deploy.s.sol` + NatSpec completo.
 3. Actualizar diagramas / planificación a “implementado”.
-4. `doc/SWC-AUDIT.md` estilo módulo 20.
+4. `doc/SWC-AUDIT-ES.md` estilo módulo 20.
 
 **Criterio de salida:** suite completa en verde; módulo v1 listo para cierre.
 
 **Hecho (2026-09-15):**
 - Gas opts: consume sin re-SLOAD; cache immutables; checks antes de pairing; `_insertChangeNote` lean; transient lock per-address.
-- `test/gas/DarkPool.gas.t.sol` + `.gas-snapshot` + `doc/GAS.md` (Poseidon ~18k vs Groth16 ~229k).
+- `test/gas/DarkPool.gas.t.sol` + `.gas-snapshot` + `doc/GAS-ES.md` (Poseidon ~18k vs Groth16 ~229k).
 - `script/Deploy.s.sol` — hasher + verifier + vault + pool + `setDarkPool`.
-- `doc/SWC-AUDIT.md` — matriz SWC-100–136 (0 vulnerables, 5 informativos).
+- `doc/SWC-AUDIT-ES.md` — matriz SWC-100–136 (0 vulnerables, 5 informativos).
 - Docs sync: UML/flujos/circuitos alineados a API real (`executeMatch` + change notes; sin EIP-712 v1).
 - **`forge test` → 74 PASS**.
 

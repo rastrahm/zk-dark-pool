@@ -1,86 +1,30 @@
 # 21 — Privacy-Preserving Dark Pools & ZK Order Books
 
-Dark pool institucional con órdenes ciegas (Poseidon), match Groth16 y settlement atómico en vault apantallado. Solidity `0.8.24` + Foundry + Circom/SnarkJS.
+Dark pool con órdenes ciegas (Poseidon), match Groth16 y settlement atómico en vault apantallado.  
+Institutional dark pool with blind orders (Poseidon), Groth16 matching, and atomic settlement in a shielded vault.
 
-**Estado:** Fases **0–7** ✅ (módulo v1 cerrado).  
-**Suite:** `forge test` → **74 PASS**.
+**Estado / Status:** v1 cerrado / closed · `forge test` → **74 PASS**
 
-## Docs
+## Idioma / Language
 
-| Archivo | Contenido |
-|---------|-----------|
-| [`doc/README.md`](./doc/README.md) | Índice de documentación |
-| [`doc/planificacion.md`](./doc/planificacion.md) | Fases, arquitectura, criterios |
-| [`doc/diagrama-de-clases.md`](./doc/diagrama-de-clases.md) | UML (API real) |
-| [`doc/diagrama-de-flujo.md`](./doc/diagrama-de-flujo.md) | Commit / match / settle |
-| [`doc/flujograma.md`](./doc/flujograma.md) | Ciclo e2e |
-| [`doc/SWC-AUDIT.md`](./doc/SWC-AUDIT.md) | Matriz SWC-100–136 |
-| [`doc/GAS.md`](./doc/GAS.md) | Poseidon vs Groth16 + snapshot |
-| [`circuits/README.md`](./circuits/README.md) | Circuito `MatchOrders(4)` + señales |
+| Español | English |
+|---------|---------|
+| [README-ES.md](./README-ES.md) | [README-EN.md](./README-EN.md) |
 
-## Stack
+## Documentación / Documentation
 
-| Capa | Tecnología |
-|------|------------|
-| Contratos | Solidity `0.8.24` (pragma fijo) |
-| Tooling | Foundry (`forge` / `cast` / `anvil`) |
-| Deps | forge-std, OpenZeppelin v5.2 en `lib/` |
-| Circuitos | Circom 2.1.9 + SnarkJS Groth16 / bn128 |
-| Hash | Poseidon (`PoseidonT3` / circomlib) |
-| Seguridad | `orderNullifiers`, `OrderAlreadyFilled`, `InvalidZKProof` |
+| Documento / Document | Español | English |
+|----------------------|---------|---------|
+| Índice de docs / Docs index | [doc/README-ES.md](./doc/README-ES.md) | [doc/README-EN.md](./doc/README-EN.md) |
+| Planificación / Planning | [planificacion-ES.md](./doc/planificacion-ES.md) | [planificacion-EN.md](./doc/planificacion-EN.md) |
+| Diagrama de clases / Class diagram | [diagrama-de-clases-ES.md](./doc/diagrama-de-clases-ES.md) | [diagrama-de-clases-EN.md](./doc/diagrama-de-clases-EN.md) |
+| Diagrama de flujo / Flow diagram | [diagrama-de-flujo-ES.md](./doc/diagrama-de-flujo-ES.md) | [diagrama-de-flujo-EN.md](./doc/diagrama-de-flujo-EN.md) |
+| Flujograma / End-to-end flowchart | [flujograma-ES.md](./doc/flujograma-ES.md) | [flujograma-EN.md](./doc/flujograma-EN.md) |
+| Auditoría SWC / SWC audit | [SWC-AUDIT-ES.md](./doc/SWC-AUDIT-ES.md) | [SWC-AUDIT-EN.md](./doc/SWC-AUDIT-EN.md) |
+| Gas | [GAS-ES.md](./doc/GAS-ES.md) | [GAS-EN.md](./doc/GAS-EN.md) |
+| Decisiones y lógica / Decisions & logic | [DECISIONES-Y-LOGICA-ES.md](./doc/DECISIONES-Y-LOGICA-ES.md) | [DECISIONES-Y-LOGICA-EN.md](./doc/DECISIONES-Y-LOGICA-EN.md) |
 
-## Setup Foundry
+## Otros / Other
 
-```bash
-export PATH="$HOME/.foundry/bin:$PATH"
-
-forge build
-forge test
-```
-
-Dependencias (ya en `lib/`; reinstalar si hace falta):
-
-```bash
-forge install foundry-rs/forge-std@v1.16.2 --no-git --shallow
-forge install OpenZeppelin/openzeppelin-contracts@v5.2.0 --no-git --shallow
-```
-
-## Setup Circom / SnarkJS
-
-1. **Node.js** >= 18  
-2. **Circom** >= 2.1 (`cargo install --git https://github.com/iden3/circom.git --tag v2.1.9 circom`)  
-3. `npm install`
-
-```bash
-export PATH="$HOME/.cargo/bin:$PATH"
-npm run compile:circuit   # → circuits/build/
-npm run generate:proof    # ptau lab + fixtures
-npm run export:verifier   # → src/verifiers/Groth16Verifier.sol
-```
-
-**No versionar:** `*.ptau`, `*.zkey`, `circuits/build/` (ver `.gitignore`).
-
-## Deploy local
-
-```bash
-anvil   # otra terminal
-forge script script/Deploy.s.sol:Deploy --rpc-url http://127.0.0.1:8545 --broadcast
-```
-
-Env: `.env.example` (`PRIVATE_KEY`, `MERKLE_TREE_LEVELS`, `POOL_TOKEN`).
-
-## Gas y seguridad
-
-```bash
-forge test --match-contract DarkPoolGasTest --gas-report
-forge snapshot --match-contract DarkPoolGasTest
-```
-
-| Doc | Resumen |
-|-----|---------|
-| [`doc/GAS.md`](./doc/GAS.md) | Poseidon ~18k · Groth16 verify ~229k · e2e ~2.4M |
-| [`doc/SWC-AUDIT.md`](./doc/SWC-AUDIT.md) | 0 vulnerables · 5 informativos |
-
-## Gobernanza
-
-**Módulo v1 cerrado** (fases 0–7). Extensiones (Next.js, depth 20, ceremony) requieren nueva autorización.
+- Circuito / Circuit: [circuits/README.md](./circuits/README.md)
+- Portfolio (ES/EN): [portfolio/index.html](./portfolio/index.html)
